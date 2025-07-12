@@ -1,0 +1,506 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+    user-select: none;
+}
+
+#game-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    display: block;
+}
+
+/* Menu Styles */
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.menu-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 300px;
+}
+
+.menu-content h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+button {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Game UI Styles */
+.game-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.game-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.ui-top {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.health-bar {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 25px;
+    color: white;
+}
+
+.health-label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.health-bg {
+    width: 150px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff4444, #ffaa00, #44ff44);
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+.health-text {
+    font-weight: bold;
+    min-width: 30px;
+}
+
+.crosshair {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #00ff00;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    z-index: 1000;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.crosshair.ready {
+    color: #00ff00;
+}
+
+.crosshair.cooldown {
+    color: #ff0000;
+}
+
+.crosshair.aiming {
+    color: #ffff00;
+    font-size: 16px;
+    transform: translate(-50%, -50%) scale(0.7);
+}
+
+.ammo-counter {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 25px;
+    color: white;
+    text-align: center;
+}
+
+.ammo-label {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.ammo-infinite {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.ui-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.controls-help {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 14px;
+}
+
+/* Scoreboard Styles */
+.scoreboard {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 250px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 14px;
+    z-index: 150;
+}
+
+.scoreboard h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #ffdd44;
+}
+
+.scoreboard-content {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.scoreboard-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scoreboard-entry:last-child {
+    border-bottom: none;
+}
+
+.player-name {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.player-stats {
+    color: #cccccc;
+    font-size: 12px;
+}
+
+/* Kill Feed Styles */
+.kill-feed {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 300px;
+    z-index: 150;
+}
+
+.kill-notification {
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s;
+    animation-fill-mode: both;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Respawn Screen Styles */
+.respawn-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.respawn-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.respawn-content h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #ff4444;
+}
+
+.respawn-content p {
+    font-size: 1.2em;
+    color: #333;
+}
+
+#respawn-timer {
+    font-weight: bold;
+    color: #ff4444;
+    font-size: 1.5em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scoreboard {
+        width: 200px;
+        right: 10px;
+        top: 10px;
+    }
+    
+    .kill-feed {
+        width: 250px;
+        right: 10px;
+        top: 120px;
+    }
+    
+    .ui-top {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .health-bar {
+        order: 2;
+    }
+    
+    .ammo-counter {
+        order: 1;
+    }
+}
+
+/* Chat Styles */
+.chat-container {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    width: 400px;
+    max-width: calc(100vw - 40px);
+    z-index: 150;
+}
+
+.chat-messages {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.2);
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.chat-message {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    word-wrap: break-word;
+    animation: chatSlideIn 0.3s ease, chatFadeOut 0.5s ease 7s;
+    animation-fill-mode: both;
+}
+
+.chat-message .player-name {
+    font-weight: bold;
+    color: #ffdd44;
+}
+
+.chat-message .message-text {
+    color: #ffffff;
+}
+
+.chat-input-container {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+    padding: 2px;
+    pointer-events: auto;
+}
+
+.chat-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+    outline: none;
+    transition: background 0.3s;
+}
+
+.chat-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.chat-input:focus {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes chatSlideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes chatFadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+/* Mobile Chat Styles */
+@media (max-width: 768px) {
+    .chat-container {
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+    }
+    
+    .chat-messages {
+        max-height: 150px;
+    }
+    
+    .chat-message {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .chat-input {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+}

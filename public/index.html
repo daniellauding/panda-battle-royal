@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panda Battle Royale</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="menu" class="menu">
+        <div class="menu-content">
+            <h1>🐼 Panda Battle Royale</h1>
+            <div class="form-group">
+                <label for="player-name">Player Name:</label>
+                <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
+            </div>
+            <div class="form-group">
+                <label for="character-select">Choose Character:</label>
+                <select id="character-select">
+                    <option value="red-panda">Red Panda 🐼</option>
+                    <option value="blue-panda">Blue Panda 💙</option>
+                    <option value="green-panda">Green Panda 💚</option>
+                    <option value="purple-panda">Purple Panda 💜</option>
+                </select>
+            </div>
+            <button id="join-game">Join Game</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="game-container" style="display: none;">
+        <div id="game-ui" class="game-ui">
+            <div class="ui-top">
+                <div class="health-bar">
+                    <div class="health-label">Health:</div>
+                    <div class="health-bg">
+                        <div id="health-fill" class="health-fill"></div>
+                    </div>
+                    <div id="health-text" class="health-text">100</div>
+                </div>
+                <div class="crosshair">+</div>
+                <div class="ammo-counter">
+                    <div class="ammo-label">Rocket Launcher</div>
+                    <div class="ammo-infinite">∞</div>
+                </div>
+            </div>
+            
+            <div class="ui-bottom">
+                <div class="controls-help">
+                    <div>W/A/S/D: Move | Mouse: Look | Space: Jump | Ctrl: Duck | Shift: Sprint | Alt: Free Look | Q: Toggle Shoulder | V: Camera Mode | Click: Shoot</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="scoreboard" class="scoreboard">
+            <h3>Scoreboard</h3>
+            <div id="scoreboard-content" class="scoreboard-content">
+                <!-- Scoreboard entries will be populated here -->
+            </div>
+        </div>
+
+        <div id="kill-feed" class="kill-feed">
+            <!-- Kill notifications will appear here -->
+        </div>
+
+        <div id="respawn-screen" class="respawn-screen" style="display: none;">
+            <div class="respawn-content">
+                <h2>💀 You died!</h2>
+                <p>Respawning in <span id="respawn-timer">3</span> seconds...</p>
+            </div>
+        </div>
+
+        <div id="chat-container" class="chat-container">
+            <div id="chat-messages" class="chat-messages">
+                <!-- Chat messages will appear here -->
+            </div>
+            <div id="chat-input-container" class="chat-input-container" style="display: none;">
+                <input type="text" id="chat-input" class="chat-input" placeholder="Press Enter to send message..." maxlength="150">
+            </div>
+        </div>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Three.js and other libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    
+    <!-- Game scripts -->
+    <script src="js/Game.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/Projectile.js"></script>
+    <script src="js/InputHandler.js"></script>
+    <script src="js/UI.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
