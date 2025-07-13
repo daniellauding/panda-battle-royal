@@ -183,10 +183,20 @@ class Game {
     }
 
     createCoverObjects() {
+        // Create trees
+        this.createTrees();
+        
+        // Create bridges
+        this.createBridges();
+        
+        // Create fences
+        this.createFences();
+        
+        // Create some basic cover objects
         const coverMaterial = new THREE.MeshLambertMaterial({ color: 0x808080 });
         
         // Create random cover objects
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 8; i++) {
             const size = Math.random() * 2 + 1;
             const height = Math.random() * 3 + 2;
             const coverGeometry = new THREE.BoxGeometry(size, height, size);
@@ -194,16 +204,194 @@ class Game {
             
             // Random position within map bounds
             cover.position.set(
-                (Math.random() - 0.5) * 180,
+                (Math.random() - 0.5) * 160,
                 height / 2,
-                (Math.random() - 0.5) * 180
+                (Math.random() - 0.5) * 160
             );
             
             cover.castShadow = true;
             cover.receiveShadow = true;
-            cover.userData.isCollidable = true; // Tag for collision detection
+            cover.userData.isCollidable = true;
             this.scene.add(cover);
         }
+    }
+
+    createTrees() {
+        // Create various low poly trees
+        for (let i = 0; i < 25; i++) {
+            const tree = this.createLowPolyTree();
+            
+            // Position trees around the map
+            tree.position.set(
+                (Math.random() - 0.5) * 180,
+                0,
+                (Math.random() - 0.5) * 180
+            );
+            
+            // Random rotation
+            tree.rotation.y = Math.random() * Math.PI * 2;
+            
+            this.scene.add(tree);
+        }
+    }
+
+    createLowPolyTree() {
+        const tree = new THREE.Group();
+        
+        // Tree trunk
+        const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.4, 4, 6);
+        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.position.y = 2;
+        trunk.castShadow = true;
+        trunk.receiveShadow = true;
+        trunk.userData.isCollidable = true;
+        tree.add(trunk);
+        
+        // Tree foliage (multiple levels for low poly look)
+        const foliageColors = [0x228B22, 0x32CD32, 0x90EE90];
+        const foliageColor = foliageColors[Math.floor(Math.random() * foliageColors.length)];
+        
+        for (let j = 0; j < 3; j++) {
+            const foliageGeometry = new THREE.ConeGeometry(2 - j * 0.4, 2.5, 6);
+            const foliageMaterial = new THREE.MeshLambertMaterial({ color: foliageColor });
+            const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+            foliage.position.y = 4 + j * 1.5;
+            foliage.castShadow = true;
+            foliage.receiveShadow = true;
+            tree.add(foliage);
+        }
+        
+        return tree;
+    }
+
+    createBridges() {
+        // Create a few bridges across different areas
+        const bridgePositions = [
+            { x: -30, z: 0, rotation: 0 },
+            { x: 30, z: -40, rotation: Math.PI / 2 },
+            { x: 0, z: 50, rotation: 0 }
+        ];
+        
+        bridgePositions.forEach(pos => {
+            const bridge = this.createLowPolyBridge();
+            bridge.position.set(pos.x, 0, pos.z);
+            bridge.rotation.y = pos.rotation;
+            this.scene.add(bridge);
+        });
+    }
+
+    createLowPolyBridge() {
+        const bridge = new THREE.Group();
+        
+        // Bridge platform
+        const platformGeometry = new THREE.BoxGeometry(20, 0.5, 4);
+        const platformMaterial = new THREE.MeshLambertMaterial({ color: 0xDEB887 });
+        const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+        platform.position.y = 1;
+        platform.castShadow = true;
+        platform.receiveShadow = true;
+        bridge.add(platform);
+        
+        // Bridge supports
+        for (let i = 0; i < 5; i++) {
+            const supportGeometry = new THREE.BoxGeometry(0.3, 2, 0.3);
+            const supportMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const support = new THREE.Mesh(supportGeometry, supportMaterial);
+            support.position.set(i * 4 - 8, 0, 0);
+            support.castShadow = true;
+            support.receiveShadow = true;
+            support.userData.isCollidable = true;
+            bridge.add(support);
+        }
+        
+        // Bridge railings
+        for (let side = 0; side < 2; side++) {
+            const railingGeometry = new THREE.BoxGeometry(20, 0.2, 0.2);
+            const railingMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const railing = new THREE.Mesh(railingGeometry, railingMaterial);
+            railing.position.set(0, 2, side === 0 ? 2 : -2);
+            railing.castShadow = true;
+            railing.receiveShadow = true;
+            bridge.add(railing);
+        }
+        
+        return bridge;
+    }
+
+    createFences() {
+        // Create fence lines around specific areas
+        const fenceAreas = [
+            { start: { x: -60, z: -60 }, end: { x: -60, z: -20 } },
+            { start: { x: -60, z: -20 }, end: { x: -20, z: -20 } },
+            { start: { x: 40, z: 40 }, end: { x: 70, z: 40 } },
+            { start: { x: 70, z: 40 }, end: { x: 70, z: 70 } }
+        ];
+        
+        fenceAreas.forEach(area => {
+            this.createFenceLine(area.start, area.end);
+        });
+    }
+
+    createFenceLine(start, end) {
+        const distance = Math.sqrt(
+            Math.pow(end.x - start.x, 2) + Math.pow(end.z - start.z, 2)
+        );
+        const posts = Math.floor(distance / 3) + 1;
+        
+        for (let i = 0; i < posts; i++) {
+            const t = i / (posts - 1);
+            const x = start.x + (end.x - start.x) * t;
+            const z = start.z + (end.z - start.z) * t;
+            
+            const fencePost = this.createFencePost();
+            fencePost.position.set(x, 0, z);
+            this.scene.add(fencePost);
+            
+            // Add fence panel between posts (except for last post)
+            if (i < posts - 1) {
+                const nextT = (i + 1) / (posts - 1);
+                const nextX = start.x + (end.x - start.x) * nextT;
+                const nextZ = start.z + (end.z - start.z) * nextT;
+                
+                const panel = this.createFencePanel();
+                panel.position.set((x + nextX) / 2, 0, (z + nextZ) / 2);
+                
+                // Rotate panel to align with fence direction
+                const angle = Math.atan2(nextZ - z, nextX - x);
+                panel.rotation.y = angle;
+                
+                this.scene.add(panel);
+            }
+        }
+    }
+
+    createFencePost() {
+        const postGeometry = new THREE.BoxGeometry(0.3, 3, 0.3);
+        const postMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+        const post = new THREE.Mesh(postGeometry, postMaterial);
+        post.position.y = 1.5;
+        post.castShadow = true;
+        post.receiveShadow = true;
+        post.userData.isCollidable = true;
+        return post;
+    }
+
+    createFencePanel() {
+        const panel = new THREE.Group();
+        
+        // Horizontal rails
+        for (let i = 0; i < 3; i++) {
+            const railGeometry = new THREE.BoxGeometry(3, 0.1, 0.1);
+            const railMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 });
+            const rail = new THREE.Mesh(railGeometry, railMaterial);
+            rail.position.y = 0.8 + i * 0.6;
+            rail.castShadow = true;
+            rail.receiveShadow = true;
+            panel.add(rail);
+        }
+        
+        return panel;
     }
 
     setupCameraControls() {
@@ -593,6 +781,199 @@ class Game {
         animate();
     }
 
+    createEnhancedExplosion(position, radius, hitObject) {
+        console.log('Creating enhanced explosion at:', position, 'radius:', radius);
+        
+        // Main explosion sphere
+        const explosionGeometry = new THREE.SphereGeometry(radius, 16, 16);
+        const explosionMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xff4400,
+            transparent: true,
+            opacity: 0.8
+        });
+        const explosion = new THREE.Mesh(explosionGeometry, explosionMaterial);
+        explosion.position.copy(position);
+        this.scene.add(explosion);
+        
+        // Inner bright core
+        const coreGeometry = new THREE.SphereGeometry(radius * 0.5, 12, 12);
+        const coreMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xffff00,
+            transparent: true,
+            opacity: 1.0
+        });
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        core.position.copy(position);
+        this.scene.add(core);
+        
+        // Particle effects - sparks flying outward
+        for (let i = 0; i < 15; i++) {
+            const sparkGeometry = new THREE.SphereGeometry(0.2, 6, 6);
+            const sparkMaterial = new THREE.MeshBasicMaterial({ 
+                color: Math.random() > 0.5 ? 0xff6600 : 0xffff00
+            });
+            const spark = new THREE.Mesh(sparkGeometry, sparkMaterial);
+            spark.position.copy(position);
+            
+            // Random direction for spark
+            const direction = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                Math.random(),
+                (Math.random() - 0.5) * 2
+            ).normalize();
+            
+            this.scene.add(spark);
+            
+            // Animate spark flying away
+            let sparkLife = 1.0;
+            const animateSpark = () => {
+                sparkLife -= 0.02;
+                spark.position.addScaledVector(direction, 0.3);
+                spark.position.y -= 0.01; // Gravity
+                spark.material.opacity = sparkLife;
+                
+                if (sparkLife > 0) {
+                    requestAnimationFrame(animateSpark);
+                } else {
+                    this.scene.remove(spark);
+                }
+            };
+            animateSpark();
+        }
+        
+        // Make hit object react (if it's destructible)
+        if (hitObject && hitObject.parent) {
+            // Add a shake effect to the hit object
+            const originalPosition = hitObject.position.clone();
+            let shakeTime = 0;
+            const shakeIntensity = 0.1;
+            
+            const shakeObject = () => {
+                shakeTime += 0.1;
+                if (shakeTime < 0.5) {
+                    hitObject.position.x = originalPosition.x + (Math.random() - 0.5) * shakeIntensity;
+                    hitObject.position.z = originalPosition.z + (Math.random() - 0.5) * shakeIntensity;
+                    requestAnimationFrame(shakeObject);
+                } else {
+                    hitObject.position.copy(originalPosition);
+                }
+            };
+            shakeObject();
+        }
+        
+        // Animate main explosion
+        let scale = 0.1;
+        const animate = () => {
+            scale += 0.15;
+            explosion.scale.set(scale, scale, scale);
+            core.scale.set(scale * 0.5, scale * 0.5, scale * 0.5);
+            
+            explosion.material.opacity -= 0.06;
+            core.material.opacity -= 0.08;
+            
+            if (explosion.material.opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                this.scene.remove(explosion);
+                this.scene.remove(core);
+            }
+        };
+        animate();
+    }
+
+    createPlayerHitEffect(player, hitPoint) {
+        console.log('Creating player hit effect for:', player.name);
+        
+        // Create colorful explosion effect matching player's color
+        const playerColor = player.getCharacterColor();
+        
+        // Main colored explosion
+        const explosionGeometry = new THREE.SphereGeometry(3, 16, 16);
+        const explosionMaterial = new THREE.MeshBasicMaterial({ 
+            color: playerColor,
+            transparent: true,
+            opacity: 0.7
+        });
+        const explosion = new THREE.Mesh(explosionGeometry, explosionMaterial);
+        explosion.position.copy(hitPoint);
+        this.scene.add(explosion);
+        
+        // Create colored particle burst
+        for (let i = 0; i < 20; i++) {
+            const sparkGeometry = new THREE.SphereGeometry(0.15, 6, 6);
+            const sparkMaterial = new THREE.MeshBasicMaterial({ 
+                color: Math.random() > 0.5 ? playerColor : 0xffff00
+            });
+            const spark = new THREE.Mesh(sparkGeometry, sparkMaterial);
+            spark.position.copy(hitPoint);
+            
+            // Random direction for spark
+            const direction = new THREE.Vector3(
+                (Math.random() - 0.5) * 2,
+                Math.random() * 1.5,
+                (Math.random() - 0.5) * 2
+            ).normalize();
+            
+            this.scene.add(spark);
+            
+            // Animate spark
+            let sparkLife = 1.0;
+            const animateSpark = () => {
+                sparkLife -= 0.025;
+                spark.position.addScaledVector(direction, 0.4);
+                spark.position.y -= 0.02; // Gravity
+                spark.material.opacity = sparkLife;
+                spark.scale.setScalar(sparkLife);
+                
+                if (sparkLife > 0) {
+                    requestAnimationFrame(animateSpark);
+                } else {
+                    this.scene.remove(spark);
+                }
+            };
+            animateSpark();
+        }
+        
+        // Make the hit player bounce/react
+        if (player.mesh) {
+            const originalPosition = player.mesh.position.clone();
+            const bounceDirection = hitPoint.clone().sub(originalPosition).normalize();
+            bounceDirection.y = 0.5; // Add upward bounce
+            
+            let bounceTime = 0;
+            const bouncePlayer = () => {
+                bounceTime += 0.05;
+                if (bounceTime < 0.3) {
+                    // Bounce the player
+                    const bounceAmount = Math.sin(bounceTime * 20) * 0.2 * (1 - bounceTime / 0.3);
+                    player.mesh.position.x = originalPosition.x + bounceDirection.x * bounceAmount;
+                    player.mesh.position.y = originalPosition.y + bounceDirection.y * bounceAmount;
+                    player.mesh.position.z = originalPosition.z + bounceDirection.z * bounceAmount;
+                    requestAnimationFrame(bouncePlayer);
+                } else {
+                    // Reset position
+                    player.mesh.position.copy(originalPosition);
+                }
+            };
+            bouncePlayer();
+        }
+        
+        // Animate main explosion
+        let scale = 0.1;
+        const animate = () => {
+            scale += 0.2;
+            explosion.scale.set(scale, scale, scale);
+            explosion.material.opacity -= 0.08;
+            
+            if (explosion.material.opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                this.scene.remove(explosion);
+            }
+        };
+        animate();
+    }
+
     updateCamera() {
         if (!this.localPlayer) return;
         
@@ -720,18 +1101,78 @@ class Game {
         this.projectiles.forEach((projectile, id) => {
             projectile.update(deltaTime);
             
-            // Check collision with walls/objects
+            // Check collision with all objects AND players
             const raycaster = new THREE.Raycaster();
-            const collidableObjects = this.scene.children.filter(obj => 
-                obj.userData && obj.userData.isCollidable
-            );
+            const collidableObjects = [];
+            const playerObjects = [];
+            
+            // Get all scene objects that can be hit
+            this.scene.traverse((child) => {
+                if (child.userData && child.userData.isCollidable) {
+                    collidableObjects.push(child);
+                }
+                // Include trees, bridges, and other map objects
+                if (child.isMesh && child !== projectile.mesh && !child.name.includes('debug')) {
+                    // Check if this is part of a player
+                    let hitPlayer = null;
+                    this.players.forEach(player => {
+                        if (child.parent === player.mesh || child === player.mesh) {
+                            hitPlayer = player;
+                        }
+                    });
+                    
+                    if (hitPlayer) {
+                        // This is a player mesh - add to player objects
+                        playerObjects.push({ mesh: child, player: hitPlayer });
+                    } else {
+                        // This is a map object
+                        collidableObjects.push(child);
+                    }
+                }
+            });
             
             raycaster.set(projectile.position, projectile.direction);
-            const intersects = raycaster.intersectObjects(collidableObjects, true);
             
-            if (intersects.length > 0 && intersects[0].distance < 1) {
-                projectile.explode(this.scene);
+            // Check player collisions first
+            const playerIntersects = raycaster.intersectObjects(playerObjects.map(p => p.mesh), false);
+            
+            if (playerIntersects.length > 0 && playerIntersects[0].distance < 3) {
+                const hitObject = playerIntersects[0].object;
+                const hitPoint = playerIntersects[0].point;
+                
+                // Find which player was hit
+                const hitPlayerObj = playerObjects.find(p => p.mesh === hitObject);
+                if (hitPlayerObj) {
+                    console.log('Projectile hit player:', hitPlayerObj.player.name);
+                    
+                    // Create enhanced explosion at hit point
+                    this.createEnhancedExplosion(hitPoint, 4, hitObject);
+                    
+                    // Create additional player-specific effects
+                    this.createPlayerHitEffect(hitPlayerObj.player, hitPoint);
+                }
+                
+                // Remove projectile
+                this.scene.remove(projectile.mesh);
                 this.projectiles.delete(id);
+                return;
+            }
+            
+            // Check map object collisions if no player hit
+            const mapIntersects = raycaster.intersectObjects(collidableObjects, false);
+            
+            if (mapIntersects.length > 0 && mapIntersects[0].distance < 2) {
+                const hitObject = mapIntersects[0].object;
+                const hitPoint = mapIntersects[0].point;
+                
+                // Create enhanced explosion at hit point
+                this.createEnhancedExplosion(hitPoint, 5, hitObject);
+                
+                // Remove projectile
+                this.scene.remove(projectile.mesh);
+                this.projectiles.delete(id);
+                
+                console.log('Projectile hit object:', hitObject.name || 'unnamed object', 'at:', hitPoint);
             }
         });
         

@@ -1,19 +1,21 @@
 # 🐼 Panda Battle Royale
 
-A multiplayer 3D browser game built with Three.js where players control low-poly pandas in an arena battle with rocket launchers!
+A multiplayer 3D browser game featuring adorable pandas with rocket launchers in an explosive battle royale!
 
-## Features
+![Game Preview](https://img.shields.io/badge/Game-Live%20Multiplayer-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-18%2B-blue) ![Three.js](https://img.shields.io/badge/Three.js-3D%20Graphics-orange)
 
-- **3rd Person Gameplay**: Control your panda character from behind with smooth camera movement
-- **WASD Movement**: Use W/A/S/D keys to move around the map
-- **Jump & Duck**: Space bar to jump, Ctrl to duck/crouch
-- **Mouse Look**: Use mouse to look around and aim freely
-- **Rocket Launcher**: Click to shoot rockets at other players
-- **Real-time Multiplayer**: Play online against other players
-- **Character Selection**: Choose from different colored panda characters
-- **Scoreboard**: Track kills, deaths, and damage dealt
-- **Kill Feed**: See real-time kill notifications
-- **Respawn System**: Automatic respawn after being eliminated
+## 🎮 Features
+
+- **🐼 10 Colorful Pandas**: Choose from Red, Blue, Green, Purple, Pink, Orange, Golden, Cyan, Brown, or Classic pandas
+- **🏃 Animated Characters**: Realistic walking and running animations with arm swinging and body bobbing
+- **🌍 Rich 3D Environment**: Explore maps with low-poly trees, wooden bridges, and fence areas
+- **💥 Spectacular Explosions**: Enhanced explosion effects with particles when shooting objects and players
+- **🚀 Physics-Based Combat**: Rocket jumping, collision detection, and explosive gameplay
+- **🎯 Real-time Multiplayer**: Battle other players in real-time using Socket.IO
+- **💬 In-Game Chat**: Communicate with other players (press Enter)
+- **📊 Live Scoreboard**: Track kills, deaths, and damage in real-time
+- **🎪 Multiple Camera Modes**: Switch between first and third person views
+- **🏗️ Solid Collision**: Can't walk through trees, bridges, or other objects
 
 ## How to Run
 
@@ -85,5 +87,30 @@ npm run dev
 - Modern browser with WebGL support
 - Mouse and keyboard for controls
 - Stable internet connection for multiplayer
+
+## 🌐 Deployment
+
+**⚠️ Important**: This is a Node.js server application and **cannot** be deployed to static hosting services like Netlify or GitHub Pages.
+
+### Recommended FREE Hosting Platforms:
+
+1. **[Render](https://render.com)** ⭐ (Recommended)
+2. **[Railway](https://railway.app)**
+3. **[Heroku](https://heroku.com)** (No longer free)
+
+### Quick Deploy to Render (FREE):
+1. Push your code to GitHub
+2. Connect Render to your GitHub repo  
+3. Render will auto-detect Node.js and deploy using `render.yaml`
+4. Your game will be live at `https://your-repo-name.onrender.com`
+
+📖 **Detailed deployment instructions**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+
+## 🛠️ Technology Stack
+
+- **Backend**: Node.js + Express + Socket.IO
+- **Frontend**: Three.js for 3D graphics
+- **Real-time**: WebSocket communication for multiplayer
+- **Deployment**: Docker, Render, Railway, Heroku ready
 
 Enjoy the panda mayhem! 🎮🐼🚀

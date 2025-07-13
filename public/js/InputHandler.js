@@ -210,8 +210,8 @@ class InputHandler {
             localPlayer.velocity.z = worldMoveDirection.z * playerSpeed;
         }
 
-        // Crouch
-        localPlayer.isCrouching = this.keys['control'] || false;
+        // Crouch (check for both control and Control)
+        localPlayer.isCrouching = this.keys['control'] || this.keys['Control'] || false;
         
         // Broadcast player movement more frequently to ensure sync
         // Send updates when moving, jumping, crouching, or every few frames to maintain sync
