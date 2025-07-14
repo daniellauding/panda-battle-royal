@@ -274,8 +274,8 @@ class Player {
     }
 
     updateMovement(deltaTime) {
-        // Check if on ground
-        this.isOnGround = this.mesh.position.y <= 1.1;
+        // Check if on ground (with small tolerance for ground detection)
+        this.isOnGround = this.mesh.position.y <= 1.05;
         
         // Apply gravity
         if (this.mesh.position.y > 1) {
@@ -285,6 +285,7 @@ class Player {
             if (this.velocity.y < 0) {
                 this.velocity.y = 0;
             }
+            this.isOnGround = true; // Ensure isOnGround is true when touching ground
         }
         
         // Apply velocity
